@@ -1,1 +1,501 @@
-# spc
+# microservice-pub
+## 1. Git
+```bash
+* git init
+
+* git add README.md
+
+* git commit -m "first commit"
+
+* git branch -M main
+
+* git remote add origin https://github.com/bomc/spp.git
+
+* git push -u origin main
+```
+
+## 2. Swagger OpenAPI
+
+local:
+* http://localhost:8081/api-docs
+
+* http://localhost:8081/webjars/swagger-ui/index.html?configUrl=/api-docs/swagger-config#/
+
+minikube:
+```bash
+minikube service list
+```
+e.g. output:
+
+| --- | --- | --- | --- |
+| NAMESPACE | NAME | TARGET PORT | URL |
+| --- | --- | --- | --- |
+| bomc-consumer        | consumer-service                 | No node port                |
+| bomc-publish         | publish-service-nodeport-ingress | http://192.168.99.104:30194 |
+| --- | --- | --- | --- |
+
+Invoke with given address from above:
+
+* http://192.168.99.104:30194/webjars/swagger-ui/index.html?configUrl=/api-docs/swagger-config#/
+
+## 3. REST urls
+* curl -X POST "http://localhost:8081/api/metadata/annotation-validation" -H  "accept: */*" -H  "X-B3-TraceId: 82f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 11e3ac9a4f6e3b90" -H  "Content-Type: application/json" -d "{\"id\":\"42\",\"name\":\"bomc\"}"
+
+
+* curl -X GET "http://localhost:8081/api/metadata/" -H  "accept: application/json" -H  "X-B3-TraceId: 70f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 15e3ac9a4f6e3b90"
+
+
+* curl -X GET "http://localhost:8081/api/metadata/42" -H  "accept: application/json" -H  "X-B3-TraceId: 60f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 05e3ac9a4f6e3b90"
+
+
+* curl -X PUT "http://localhost:8081/api/metadata/" -H  "accept: */*" -H  "X-B3-TraceId: 80f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 45e3ac9a4f6e3b90" -H  "Content-Type: application/json" -d "{\"id\":\"42\",\"name\":\"test\"}"
+
+
+* curl -X DELETE "http://localhost:8081/api/metadata/42" -H  "accept: application/json" -H  "X-B3-TraceId: 70f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 25e3ac9a4f6e3b90"
+
+## 4. Actuator
+On local machine:
+* curl -v GET http://localhost:8082/actuator/info
+
+If running with nodeport:
+curl -v GET http://192.168.99.104:30194/actuator/info | jq
+
+If running with ingress:
+* curl -v GET http://bomc.ingress.org/bomc/actuator/info | jq
+
+## 5. Minikube - docker
+```bash
+minikube start
+
+minikube start --vm-driver=virtualbox --cpus 2 --memory 10240 --disk-size=20000
+
+minikube addons list
+
+minikube addons enable metrics-server
+
+# Using 'top' after enablling metrics-server. 
+kubectl top pods -n bomc-consumer
+
+minikube addons enable ingress
+```
+
+### 5.1 GIT bash
+```bash
+# Add this line to .bash_profile if you want to use minikube's daemon by default (or if you do not want to set this every time you open a new terminal).
+eval $(minikube docker-env)
+
+eval $(docker-machine env -u)
+```
+
+### 5.2 Windows cmd
+```bash
+# List env variables
+minikube docker-env
+
+@FOR /f "tokens=*" %i IN ('minikube -p minikube docker-env') DO @%i
+```
+
+```bash
+minikube ssh
+```
+
+```bash
+docker ps
+```
+
+### 5.3 Delete Minikube (Windows)
+```bash
+minikube stop & REM stops the VM
+```
+
+```bash
+minikube delete & REM deleted the VM
+```
+
+Then delete the .minikube and .kube directories usually under:
+
+`C:\users\{user}\.minikube`
+
+and
+
+`C:\users\{user}\.kube`
+
+Or if you are using chocolatey:
+
+```bash
+C:\ProgramData\chocolatey\bin\minikube stop
+C:\ProgramData\chocolatey\bin\minikube delete
+choco uninstall minikube
+choco uninstall kubectl
+```
+
+### 5.4 Docker commands
+
+####Removing untagged images
+```bash
+docker image rm $(docker images | grep "^<none>" | awk "{print $3}")
+```
+
+####Remove all stopped containers.
+```bash
+docker container rm $(docker ps -a -q)
+```
+
+## 6. Tools
+### 6.1 Gradle
+```bash
+gradle jibDockerBuild
+```
+
+```bash
+gradle build
+```
+
+### 6.2 Dive
+A tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image.
+
+```bash
+# NOTE: On windows run it in cmd box.
+dive localhost:5000/bomc/consumer:v.1.0.0-1-g5eb028a
+```
+
+### 6.3 Versioning
+*Version v.1.0.0-1-g5eb028a means:*
+
+v.1.0.0 -> last tag
+
+1 -> number of commits since the last tag
+
+g5eb028a -> hash of the last commit
+
+### 6.4 Simple deployment to Minikube with kustomize
+> From /deployment directory
+
+```bash
+# check kubernetes resources with kustomize (namespace, service deployment).
+\deployment\kustomize build
+
+# The -k option, which will direct kubectl to process the kustomization file.
+kubectl apply -k .
+```
+
+### 6.5 Check deployment with kubectl - namespace, service and deployment
+```bash
+kubectl get pods -n bomc -o wide
+kubectl get pods -n bomc -o yaml
+kubectl describe pod consumer-66dc5c8d7d-ccs2x -n bomc
+
+kubectl get deployments -n bomc
+kubectl describe deployment consumer -n bomc
+
+# Access the Init Container status programmatically by reading the status.initContainerStatuses field on the Pod Spec:
+kubectl get pod nginx -n bomc --template '{{.status.initContainerStatuses}}'
+
+# Accessing logs from Init Containers 
+# Pass the Init Container name along with the Pod name to access its logs.
+kubectl logs <pod-name> -c <init-container-2> -n <namespace>
+```
+
+#### 6.6 Call application via NodePort
+NodePort will use the cluster IP and expose’s the service via a static port.
+
+```bash
+# Expose consumer service
+# 1. Read deployment name (-> 'Name') from deployment resource:
+kubectl describe deployment consumer -n bomc
+# 2.Expose port with expose command:
+#   –type=NodePort makes the Service available from outside of the cluster. It will be available at <NodeIP>:<NodePort>
+#   The command creates a service object that exposes the deployment 'consumer'
+kubectl expose deployment consumer -n bomc --type=NodePort --name=consumer-nodeport
+
+minikube service list
+
+# Shows the address of the service.
+minikube service consumer -n bomc --url
+
+# This command will start the default browser, opening <NodeIP>:<NodePort>.
+minikube service consumer -n bomc
+```
+
+| NAMESPACE | NAME | TARGET PORT | URL |
+| --- | --- | --- | --- |
+| bomc | consumer | - | http://192.168.99.102:31633 |
+
+* Opening service bomc/consumer in default browser...
+
+```bash
+# Invoke application:
+curl -X POST "http://192.168.99.102:31633/api/metadata/annotation-validation" -H  "accept: */*" -H  "X-B3-TraceId: 82f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 11e3ac9a4f6e3b90" -H  "Content-Type: application/json" -d "{\"id\":\"42\",\"name\":\"bomc\"}"
+
+# or in Browser OpenAPI:
+
+http://192.168.99.100:30117/webjars/swagger-ui/index.html?configUrl=/api-docs/swagger-config
+```
+
+### 6.7 Open shell in running container
+```bash
+kubectl exec -it consumer-66dc5c8d7d-ccs2x -n bomc -- sh
+
+kubectl exec -it consumer-66dc5c8d7d-ccs2x -n bomc bash
+```
+
+> NOTE: GIT bash on windows:
+>
+> ```bash
+> winpty kubectl exec -it consumer-66dc5c8d7d-ccs2x -n bomc -- sh
+> ```
+
+### 6.8 Check if service is available and correct configured
+Services are abstract interfaces (host + port) to a workload that may consist of several pods.
+
+#### Step 1: Check if the Service exists
+```bash
+kubectl get svc -n bomc
+```
+
+#### Step 2: Test Your Service from inside a pod.
+```bash
+#works for http services
+wget <servicename>:<httpport>
+
+#Confirm there is a DNS entry for the service!
+nslookup <servicename>
+```
+
+Alternatively, forward port local machine and test locally.
+
+```bash
+kubectl port-forward <service_name> 8000:8080 -n bomc
+```
+
+Address the service as localhost:8000.
+
+#### Step 3: Check if the Service Is Actually Targeting Relevant Pods
+K8s services route inbound traffic to one of the pods, based on the label selector. Traffic is routed to targeted pods by their IP.
+
+```bash
+kubectl get pods -l app=consumer -n bomc
+```
+
+So, check if the service is bound to those pods.
+
+```bash
+kubectl describe service <service-name> | grep Endpoints
+```
+
+The IPs of all the pods related to the workload listed. If not, go to step 4.
+
+#### Step 4: Check Pod Labels
+Make sure the selector in the K8s service matches the pods’ labels!
+
+```bash
+kubectl get pods --show-labels -n bomc
+
+kubectl describe svc <service_name> -n bomc
+```
+
+#### Step 5: Confirm That Service Ports Match The Pod
+Finally, make sure that the code in the pods actually listens to the targetPort that is specified for the service.
+
+#### 6.9 Adding Deployment Strategy
+```yaml
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+```
+
+This tell kubernetes how to replace old Pods by new ones. In this case the RollingUpdate (`rollingUpdate`) is used. The `maxSurge` of 1 specifies maximum number of Pods that can be created over the desired number of Pods `1` in this case. The `maxUnavailable` specifies the maximum number of Pods that can be unavailable during the update process `0` in this case.
+
+### 7. Kubectl commands
+```bash
+# Get pods with a specific label 'app=consumer' 
+kubectl get pods -l app=consumer -n bomc
+# Get all pods with a specific name space and label 'app=consumer' 
+kubectl get pods --all-namespaces -l app=consumer
+# Get all services from all namespaces sorted by name
+kubectl get services --all-namespaces --sort-by=.metadata.name -o wide
+# List all container images in all namespaces
+kubectl get pods --all-namespaces -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c
+# List environment variables from pod.
+kubectl exec publisher-685c77dfc7-qs2mm -n bomc-publish -it -- env 
+```
+
+```bash
+# Get pods with a specific label 'app=consumer' 
+kubectl get pods -l app=consumer -o go-template='{{range .items}}{{.status.podIP}}{{"\n"}}{{end}}' -n bomc
+```
+
+```bash
+kubectl get pod publisher-597764857f-vfpn8 -n bomc-publish -o json
+
+kubectl get pod publisher-597764857f-vfpn8 -n bomc-publish -o json | jq '.status.hostIP' -r
+kubectl get pod publisher-597764857f-vfpn8 -n bomc-publish -o json | jq '.status.podIP' -r
+```
+
+
+### 8. Microservice intercommunication inside same namespace via k8s services
+The 'publish'-application invokes the 'consumer'-application via REST-request.
+
+ publish - springboot/webclient---------->| REST-Call |---> consumer - springboot/rest-endpoint
+
+   
+##### a. Get environment variables inside consumer the pod.
+Whenever a pod is created, k8s injects some env variables into the pods env. These variables can be used by containers to interact with other containers. So when a service is created, the address of the service will be injected as an env variable to all the pods that run within the *same namespace*.
+
+The k8s conventions are:
+
+{{SERVICE_NAME}}_SERVICE_HOST    # ClusterIP
+
+{{SERVICE_NAME}}_SERVICE_PORT    # Port
+ 
+```bash 
+kubectl exec consumer-5d4969c4f5-dflkj -n bomc -- printenv | grep SERVICE
+
+PUBLISH_SERVICE_SERVICE_HOST=10.109.177.190
+PUBLISH_SERVICE_SERVICE_PORT_8181_TCP=8181
+PUBLISH_SERVICE_SERVICE_PORT=8181
+PUBLISH_SERVICE_PORT_8181_TCP=tcp://10.109.177.190:8181
+PUBLISH_SERVICE_PORT_8181_TCP_ADDR=10.109.177.190
+CONSUMER_SERVICE_SERVICE_HOST=10.102.64.176
+CONSUMER_SERVICE_HOST=10.111.175.48
+CONSUMER_SERVICE_SERVICE_PORT_8081_TCP=8081
+CONSUMER_SERVICE_PORT_8081_TCP_PORT=8081
+PUBLISH_SERVICE_HOST=10.97.213.196
+PUBLISH_SERVICE_PORT=tcp://10.109.177.190:8181
+KUBERNETES_SERVICE_PORT=443
+CONSUMER_SERVICE_SERVICE_PORT=8081
+KUBERNETES_SERVICE_HOST=10.96.0.1
+KUBERNETES_SERVICE_PORT_HTTPS=443
+PUBLISH_SERVICE_PORT_8181_TCP_PROTO=tcp
+PUBLISH_SERVICE_PORT_8181_TCP_PORT=8181
+CONSUMER_SERVICE_PORT=tcp://10.102.64.176:8081
+CONSUMER_SERVICE_PORT_8081_TCP=tcp://10.102.64.176:8081
+CONSUMER_SERVICE_PORT_8081_TCP_PROTO=tcp
+CONSUMER_SERVICE_PORT_8081_TCP_ADDR=10.102.64.176
+```
+
+##### b. Get environment variables from consumer-service
+CONSUMER_SERVICE_SERVICE_HOST=10.102.64.176, CONSUMER_SERVICE_SERVICE_PORT=8081
+
+##### c. Extend application property in publish application
+
+```java
+
+...
+
+# Set the rest client base url in 'publish'-application to invoke the 'consumer'-application. 
+bomc.web-client.base-url=http://${CONSUMER_SERVICE_SERVICE_HOST}:${CONSUMER_SERVICE_SERVICE_PORT}
+
+...
+
+```
+
+### 9. Microservice intercommunication accross namespaces
+K8s doesn't inject environment variables from other namespaces. Using service names like 'consumer-service' are only valid within the same namespace.
+
+#### 9.1 Using fully-qualified DNS names
+Kubernetes has cluster-aware DNS service like CoreDNS running, so it is possible using fully qualified DNS names starting from cluster.local. Assume the 'consumer'-Application is running in namespace 'bomc-consumer' and has a service 'consumer-service' defined. To address using an URL shown below:
+
+```
+# base-url for communication accross different namespaces.
+{{SERVICE_NAME}}.{{NAMESPACE_NAME}}.svc.cluster.local:{{PORT (is optional if port is 80)}}
+# in application.properties
+bomc.web-client.base-url=http://consumer-service.bomc-consumer.svc.cluster.local:8081
+```
+
+### 10. Healthcheck
+
+#### 10.1 Adding liveness probe
+```yaml
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 3
+```
+
+This will check to see an HTTP 200 response from the endpoint `/actuator/health` at the deployment port every 30 seconds (`periodSeconds`) after an initial delay (`initialDelaySeconds`) of 30 seconds for a maximum of 3 times (`failureThreshold`) after which it is going to restart the container for which this liveness probe is added.
+
+### 10.2 Adding readiness probe
+```yaml
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            failureThreshold: 3
+```
+
+This will check to see an HTTP 200 response from the endpoint `/actuator/health` at the deployment port every 30 seconds (`periodSeconds`) after an initial delay (`initialDelaySeconds`) of 15 seconds for a maximum of 3 times (`failureThreshold`) after which it is going to Pod will be marked container as `Unready` and no traffic will be sent to it for which this readiness probe is added which is the container running the application.
+
+### 11. Requests and limits
+
+
+### 12. Ingress router
+
+Exceute the following command:
+
+```bash
+minikube addons enable ingress
+```
+
+#### 12.1 Create a service
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: publish-service-nodeport-ingress
+  labels:
+    app: publish
+  namespace: bomc-publish
+spec:
+  selector:
+    app: publish
+  ports:
+  - protocol: TCP
+    name: 8181-tcp
+    port: 8181
+    targetPort: 8181
+  type: NodePort
+  
+#
+# This rewrite any characters captured by '(.*)' will be assigned to the placeholder '$2',
+# which is then used as a parameter in the 'rewrite-target' annotation.
+# This will results in the following rewrites:
+#
+# - 'bomc.ingress.org/bomc' rewrites to 'bomc.ingress.org/'
+# - 'bomc.ingress.org/bomc/' rewrites to 'bomc.ingress.org/'
+# - 'bomc.ingress.org/bomc/api/metadata' rewrites to 'bomc.ingress.org/api/metdata'
+#
+```
+
+NOTE: the value of `type` is *NodePort*.
+
+#### 12.2 Check service address
+
+```bash
+minikube service publish-service-nodeport-ingress -n bomc-publish --url
+
+http://192.168.99.104:30194
+```
+
+> Note: If Minikube is running locally, use `minikube ip` to get the external IP. The IP address displayed within the ingress list will be the internal IP.
+
+#### 12.3 Edit host file
+
+on window: C:\Windows\System32\drivers\etc\hosts
+add the following line to the hosts file.
+
+```
+192.168.99.104 bomc.ingress.org
+```
+
+This sends requests from `bomc.ingress.org` to Minikube:
+
+Verify that the Ingress controller is directing traffic with a simple curl.
+
