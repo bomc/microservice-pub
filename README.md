@@ -15,7 +15,6 @@
 ```
 
 ## 2. Swagger OpenAPI
-
 local:
 * http://localhost:8081/api-docs
 
@@ -130,7 +129,6 @@ choco uninstall kubectl
 ```
 
 ### 5.4 Docker commands
-
 ####Removing untagged images
 ```bash
 docker image rm $(docker images | grep "^<none>" | awk "{print $3}")
@@ -338,7 +336,6 @@ kubectl get pod publisher-597764857f-vfpn8 -n bomc-publish -o json | jq '.status
 The 'publish'-application invokes the 'consumer'-application via REST-request.
 
  publish - springboot/webclient---------->| REST-Call |---> consumer - springboot/rest-endpoint
-
    
 ##### a. Get environment variables inside consumer the pod.
 Whenever a pod is created, k8s injects some env variables into the pods env. These variables can be used by containers to interact with other containers. So when a service is created, the address of the service will be injected as an env variable to all the pods that run within the *same namespace*.
@@ -405,7 +402,6 @@ bomc.web-client.base-url=http://consumer-service.bomc-consumer.svc.cluster.local
 ```
 
 ### 10. Healthcheck
-
 #### 10.1 Adding liveness probe
 ```yaml
           livenessProbe:
@@ -436,7 +432,6 @@ This will check to see an HTTP 200 response from the endpoint `/actuator/health`
 
 
 ### 12. Ingress router
-
 Exceute the following command:
 
 ```bash
@@ -444,7 +439,6 @@ minikube addons enable ingress
 ```
 
 #### 12.1 Create a service
-
 ```yaml
 apiVersion: v1
 kind: Service
@@ -477,7 +471,6 @@ spec:
 NOTE: the value of `type` is *NodePort*.
 
 #### 12.2 Check service address
-
 ```bash
 minikube service publish-service-nodeport-ingress -n bomc-publish --url
 
@@ -487,7 +480,6 @@ http://192.168.99.104:30194
 > Note: If Minikube is running locally, use `minikube ip` to get the external IP. The IP address displayed within the ingress list will be the internal IP.
 
 #### 12.3 Edit host file
-
 on window: C:\Windows\System32\drivers\etc\hosts
 add the following line to the hosts file.
 
@@ -499,3 +491,127 @@ This sends requests from `bomc.ingress.org` to Minikube:
 
 Verify that the Ingress controller is directing traffic with a simple curl.
 
+### 13. ConfigMap
+A ConfigMap is a dictionary of configuration settings. This dictionary consists of key-value pairs of strings. Kubernetes provides these values to your containers.
+
+The given ConfigMap:
+
+```YAML
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: publisher
+  namespace: bomc-publish
+data:
+  application-k8s.properties: |-
+    bomc.consumer=http://consumer-service.bomc-consumer.svc.cluster.local:8081
+    bomc.github=https://api.github.com
+```
+
+#### 13.1 ConfigMap with Environment Variables and `envFrom`
+Expose with environment variables:
+
+```YAML
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: publisher
+  namespace: bomc-publish
+data:
+  application-k8s.properties: |-
+    bomc.consumer=http://consumer-service.bomc-consumer.svc.cluster.local:8081
+    bomc.github=https://api.github.com
+```
+
+reference in Kubernetes Deployment:
+
+```YAML
+     spec:
+       serviceAccountName: publisher-account
+       containers:
+       env:
+         - name: CONSUMER_HOST_ADDRESS
+           valueFrom:
+             configMapKeyRef:
+               name: publisher
+               key: bomc.consumer
+         - name: GITHUB_HOST_ADDRESS
+           valueFrom:
+             configMapKeyRef:
+               name: publisher
+               key: bomc.github
+```
+
+or reference with `envFrom`
+
+```YAML
+     spec:
+       serviceAccountName: publisher-account
+       containers:
+       envFrom:
+       - configMapRef:
+           name: publisher
+```
+
+Inject in Spring Boot java code:
+
+```JAVA
+@Value("${bomc.consumer}")
+private String consumerBaseUrl;
+
+@Value("${bomc.github}")
+private String githubBaseUrl;
+```
+
+#### 13.2 ConfigMap with Environment Variables and `envFrom`
+Load application properties from Kubernetes ConfigMaps and Secrets. Reload application properties when a ConfigMap or Secret changes.
+
+Gradle dependencies
+
+```
+dependencies {
+	implementation 'org.springframework.cloud:spring-cloud-starter-kubernetes-fabric8-config:2.0.1'
+	
+  ...
+  
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+```
+
+Properties setting in bootstrap.properties
+
+```PROPERTIES
+###
+#
+# Set the app name
+spring.application.name=publisher
+
+###
+#
+# Configuration for config-map handling.
+spring.cloud.kubernetes.config.sources[0].name=${spring.application.name}
+spring.cloud.kubernetes.config.sources[0].namespace=bomc-publish
+
+spring.cloud.kubernetes.reload.enabled=true
+spring.cloud.kubernetes.reload.mode=polling
+spring.cloud.kubernetes.reload.period=30000
+```
+
+Properties setting in application.properties
+
+```PROPERTIES
+management.endpoint.restart.enabled=true
+```
+
+Inject in Spring Boot java code:
+
+```JAVA
+@Value("${bomc.consumer}")
+private String consumerBaseUrl;
+
+@Value("${bomc.github}")
+private String githubBaseUrl;
+```
