@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: publish
+  name: publisher
+  namespace: bomc-publish
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: publish
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: actuator/prometheus
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '8181'
+      labels:
+        app: publish
+    spec:
+      serviceAccountName: publisher-account
+      containers:
+      - name: publish
+        image: localhost:5000/bomc/publish:v.1.0.0-68-ga508b98
+        imagePullPolicy: IfNotPresent
+        #env:
+        #  - name: CONSUMER_HOST_ADDRESS
+        #    valueFrom:
+        #      configMapKeyRef:
+        #        name: publisher
+        #        key: bomc.consumer
+        #  - name: GITHUB_HOST_ADDRESS
+        #    valueFrom:
+        #      configMapKeyRef:
+        #        name: publisher
+        #        key: bomc.github
+        #
+        #envFrom:
+        #- configMapRef:
+        #    name: publisher
+        resources:
+          requests:
+            cpu: 10m
+            memory: 360Mi
+          limits:
+            cpu: 50m
+            memory: 360Mi
+        ports:
+        - containerPort: 8181
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8181
+          initialDelaySeconds: 25
+          periodSeconds: 30
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8181
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          failureThreshold: 3
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      initContainers:
+      #- name: wait-for-consumer-pod
+      #  image: busybox:1.28
+      #  command: ['sh', '-c', "COUNTER=0; until nslookup consumer-service.bomc-consumer.svc.cluster.local; do echo waiting for consumer app, $((COUNTER++))-times; sleep 3; done"]
+      - name: wait-for-consumer-pod
+        image: curlimages/curl:7.75.0
+        command: ["/bin/sh", "-c"]
+        args: ["while [ $(curl --connect-timeout 5 --no-keepalive -s -v -w '%{http_code}\n' -H 'Connection: close' http://consumer-service.bomc-consumer.svc.cluster.local:8081/actuator/health/liveness -o /dev/null) -ne 200 ]; do sleep 5; echo `date +'%d.%m.%Y %H:%M:%S'` - Waiting for consumer pod... ; done"]

@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: publish-ingress
+  namespace: bomc-publish
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: bomc.ingress.org
+      http:
+        paths:
+          - path: /bomc(/|$)(.*)
+            backend:
+              serviceName: publish-service-nodeport-ingress
+              servicePort: 8181
+#
+# This rewrite any characters captured by '(.*)' will be assigned to the placeholder '$2',
+# which is then used as a parameter in the 'rewrite-target' annotation.
+# This will results in the following rewrites:
+#
+# - 'bomc.ingress.org/bomc' rewrites to 'bomc.ingress.org/'
+# - 'bomc.ingress.org/bomc/' rewrites to 'bomc.ingress.org/'
+# - 'bomc.ingress.org/bomc/api/metadata' rewrites to 'bomc.ingress.org/api/metdata'
+#
