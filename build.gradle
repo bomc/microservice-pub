@@ -130,7 +130,7 @@ jib {
         // Add environment
         environment = [IMAGE_VERSION: project.version]
         // The application will be limited to 360mb of memory
-        jvmFlags = ['-Xms360m', '-Xmx360m', '-Dspring.profiles.active=k8s']
+        jvmFlags = ['-Xms360m', '-Xmx360m', '-Dspring.profiles.active=prod']
         // This generates the following entrypoint line in the Dockerfile.
         // "Entrypoint": [java, -Xms360m, -Xmx360m, -Dspring.profiles.active=k8s, -cp, /app/resources:/app/classes:/app/libs/*, de.bomc.poc.publish.PublishApplication]
         

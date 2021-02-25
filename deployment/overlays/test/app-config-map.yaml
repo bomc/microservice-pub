@@ -3,6 +3,6 @@ kind: ConfigMap
 metadata:
   name: publisher
 data:
-  application-k8s.properties: |-
+  application-test.properties: |-
     bomc.consumer=http://consumer-service.bomc-consumer.svc.cluster.local:8081
     bomc.github=https://api.github.com
