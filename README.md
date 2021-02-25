@@ -66,7 +66,7 @@ If running with ingress:
 ```bash
 minikube start
 
-minikube start --vm-driver=virtualbox --cpus 2 --memory 10240 --disk-size=20000
+minikube start --vm-driver=virtualbox --cpus 2 --memory 10240 --disk-size=25GB
 
 minikube addons list
 
@@ -563,7 +563,7 @@ private String consumerBaseUrl;
 private String githubBaseUrl;
 ```
 
-#### 13.2 ConfigMap with Environment Variables and `envFrom`
+#### 13.2 ConfigMap with spring boot cloud fabric8
 Load application properties from Kubernetes ConfigMaps and Secrets. Reload application properties when a ConfigMap or Secret changes.
 
 Gradle dependencies

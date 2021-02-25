@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ./000-namespace.yaml
+  - ./010-app-config-map.yaml
+  - ./020-rbac.yaml
+  - ./030-dc.yaml
+  #- /040-svc.yaml
+  - ./045-svc-nodeport-ingress.yaml
+  - ./050-ingress.yaml
+
+namespace: bomc-publish
+
+commonLabels:
+  app.kubernetes.io/name: bomc-publish-app
+

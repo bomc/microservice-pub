@@ -4,7 +4,7 @@ metadata:
   labels:
     app: publish
   name: publisher
-  namespace: bomc-publish
+  namespace: bomc-publish-namespace
 spec:
   replicas: 1
   selector:
@@ -28,6 +28,11 @@ spec:
       - name: publish
         image: localhost:5000/bomc/publish:v.1.0.0-68-ga508b98
         imagePullPolicy: IfNotPresent
+        env:
+        - name: ENVIRONMENT_1
+          value: 'bomc.replace.me'
+        - name: ENVIRONMENT_2
+          value: 'bomc.replace.me'
         #env:
         #  - name: CONSUMER_HOST_ADDRESS
         #    valueFrom:

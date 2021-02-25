@@ -2,13 +2,13 @@ apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: publish-ingress
-  namespace: bomc-publish
+  namespace: bomc-publish-namespace
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - host: bomc.ingress.org
+    - host: bomc.replace.me
       http:
         paths:
           - path: /bomc(/|$)(.*)

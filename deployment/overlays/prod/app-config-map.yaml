@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: publisher
+  namespace: bomc-publish-prod
+data:
+  application-k8s.properties: |-
+    bomc.consumer=http://consumer-service.bomc-consumer.svc.cluster.local:8081
+    bomc.github=https://api.github.com

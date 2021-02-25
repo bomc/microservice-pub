@@ -1,6 +1,6 @@
 kind: Namespace
 apiVersion: v1
 metadata:
-  name: bomc-publish-namespace
+  name: bomc-publish-prod
   labels:
     name: bomc-publish
