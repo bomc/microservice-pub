@@ -1,31 +1,28 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 namespace: bomc-publish-prod
-
 bases:
 - ./../../base/
-
 commonLabels:
   environment: prod
-
 images:
 - name: localhost:5000/bomc/publish
-  newTag: 1.0.0-68-ga508b98.dirty
-
+  newName: localhost:5000/bomc/publish
+  newTag: 5f33c39.dirty
 patchesStrategicMerge:
 - ingress-host.yaml
 - app-config-map.yaml
 - wait-for-consumer-pod.yaml
-- namespace-prod.yaml
-
+    # Get this configuration parameter from 030-dc.yaml
 patchesJson6902:
 - path: deployment-config-patch.json
   target:
-    # Get this configuration from 030-dc.yaml
     group: apps
     kind: Deployment
     name: publisher
     version: v1
-    
-# Run it with: kubectl apply -k ./overlay/prod
+- path: namespace-patch.json
+  target:
+    kind: Namespace
+    name: bomc-rename-namespace
+    version: v1
