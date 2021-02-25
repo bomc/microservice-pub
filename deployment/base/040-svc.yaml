@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: publish-service
   labels:
     app: publish
-  namespace: bomc-publish
+  name: publish-service
+  namespace: bomc-rename-namespace
 spec:
   selector:
     app: publish

@@ -1,8 +1,10 @@
 apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
+  labels:
+    app: publish
   name: publish-ingress
-  namespace: bomc-publish-namespace
+  namespace: bomc-rename-namespace
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     kubernetes.io/ingress.class: nginx

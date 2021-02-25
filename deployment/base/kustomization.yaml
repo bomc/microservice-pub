@@ -10,8 +10,6 @@ resources:
   - ./045-svc-nodeport-ingress.yaml
   - ./050-ingress.yaml
 
-namespace: bomc-publish
-
 commonLabels:
   app.kubernetes.io/name: bomc-publish-app
 
