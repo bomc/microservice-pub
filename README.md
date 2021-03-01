@@ -14,7 +14,16 @@
 * git push -u origin main
 ```
 
-## 2. Swagger OpenAPI
+## 2. Build, Run and Deploy on Kubernetes
+
+```bash
+# in /publish
+gradle jibDockerBuild
+
+
+```
+
+## 3. Swagger OpenAPI
 local:
 * http://localhost:8081/api-docs
 
@@ -37,7 +46,7 @@ Invoke with given address from above:
 
 * http://192.168.99.104:30194/webjars/swagger-ui/index.html?configUrl=/api-docs/swagger-config#/
 
-## 3. REST urls
+## 4. REST urls
 * curl -X POST "http://localhost:8081/api/metadata/annotation-validation" -H  "accept: */*" -H  "X-B3-TraceId: 82f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 11e3ac9a4f6e3b90" -H  "Content-Type: application/json" -d "{\"id\":\"42\",\"name\":\"bomc\"}"
 
 
@@ -52,7 +61,7 @@ Invoke with given address from above:
 
 * curl -X DELETE "http://localhost:8081/api/metadata/42" -H  "accept: application/json" -H  "X-B3-TraceId: 70f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 25e3ac9a4f6e3b90"
 
-## 4. Actuator
+## 5. Actuator
 On local machine:
 * curl -v GET http://localhost:8082/actuator/info
 
@@ -62,7 +71,7 @@ curl -v GET http://192.168.99.104:30194/actuator/info | jq
 If running with ingress:
 * curl -v GET http://bomc.ingress.org/bomc/actuator/info | jq
 
-## 5. Minikube - docker
+## 6. Minikube - docker
 ```bash
 minikube start
 
@@ -78,7 +87,7 @@ kubectl top pods -n bomc-consumer
 minikube addons enable ingress
 ```
 
-### 5.1 GIT bash
+### 6.1 GIT bash
 ```bash
 # Add this line to .bash_profile if you want to use minikube's daemon by default (or if you do not want to set this every time you open a new terminal).
 eval $(minikube docker-env)
@@ -86,7 +95,7 @@ eval $(minikube docker-env)
 eval $(docker-machine env -u)
 ```
 
-### 5.2 Windows cmd
+### 6.2 Windows cmd
 ```bash
 # List env variables
 minikube docker-env
@@ -102,7 +111,7 @@ minikube ssh
 docker ps
 ```
 
-### 5.3 Delete Minikube (Windows)
+### 6.3 Delete Minikube (Windows)
 ```bash
 minikube stop & REM stops the VM
 ```
@@ -128,7 +137,7 @@ choco uninstall minikube
 choco uninstall kubectl
 ```
 
-### 5.4 Docker commands
+### 6.4 Docker commands
 ####Removing untagged images
 ```bash
 docker image rm $(docker images | grep "^<none>" | awk "{print $3}")
@@ -139,8 +148,8 @@ docker image rm $(docker images | grep "^<none>" | awk "{print $3}")
 docker container rm $(docker ps -a -q)
 ```
 
-## 6. Tools
-### 6.1 Gradle
+## 7. Tools
+### 7.1 Gradle
 ```bash
 gradle jibDockerBuild
 ```
@@ -149,7 +158,7 @@ gradle jibDockerBuild
 gradle build
 ```
 
-### 6.2 Dive
+### 7.2 Dive
 A tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image.
 
 ```bash
@@ -157,7 +166,7 @@ A tool for exploring a docker image, layer contents, and discovering ways to shr
 dive localhost:5000/bomc/consumer:v.1.0.0-1-g5eb028a
 ```
 
-### 6.3 Versioning
+### 7.3 Versioning
 *Version v.1.0.0-1-g5eb028a means:*
 
 v.1.0.0 -> last tag
@@ -166,7 +175,8 @@ v.1.0.0 -> last tag
 
 g5eb028a -> hash of the last commit
 
-### 6.4 Simple deployment to Minikube with kustomize
+### 7.4 Simple deployment to Minikube with kustomize
+
 > From /deployment directory
 
 ```bash
@@ -177,7 +187,7 @@ g5eb028a -> hash of the last commit
 kubectl apply -k .
 ```
 
-### 6.5 Check deployment with kubectl - namespace, service and deployment
+### 7.5 Check deployment with kubectl - namespace, service and deployment
 ```bash
 kubectl get pods -n bomc -o wide
 kubectl get pods -n bomc -o yaml
@@ -194,7 +204,7 @@ kubectl get pod nginx -n bomc --template '{{.status.initContainerStatuses}}'
 kubectl logs <pod-name> -c <init-container-2> -n <namespace>
 ```
 
-#### 6.6 Call application via NodePort
+### 7.6 Call application via NodePort
 NodePort will use the cluster IP and expose’s the service via a static port.
 
 ```bash
@@ -230,7 +240,7 @@ curl -X POST "http://192.168.99.102:31633/api/metadata/annotation-validation" -H
 http://192.168.99.100:30117/webjars/swagger-ui/index.html?configUrl=/api-docs/swagger-config
 ```
 
-### 6.7 Open shell in running container
+### 7.7 Open shell in running container
 ```bash
 kubectl exec -it consumer-66dc5c8d7d-ccs2x -n bomc -- sh
 
@@ -243,7 +253,7 @@ kubectl exec -it consumer-66dc5c8d7d-ccs2x -n bomc bash
 > winpty kubectl exec -it consumer-66dc5c8d7d-ccs2x -n bomc -- sh
 > ```
 
-### 6.8 Check if service is available and correct configured
+### 7.8 Check if service is available and correct configured
 Services are abstract interfaces (host + port) to a workload that may consist of several pods.
 
 #### Step 1: Check if the Service exists
@@ -295,7 +305,7 @@ kubectl describe svc <service_name> -n bomc
 #### Step 5: Confirm That Service Ports Match The Pod
 Finally, make sure that the code in the pods actually listens to the targetPort that is specified for the service.
 
-#### 6.9 Adding Deployment Strategy
+### 7.9 Adding Deployment Strategy
 ```yaml
   strategy:
     rollingUpdate:
@@ -305,7 +315,7 @@ Finally, make sure that the code in the pods actually listens to the targetPort 
 
 This tell kubernetes how to replace old Pods by new ones. In this case the RollingUpdate (`rollingUpdate`) is used. The `maxSurge` of 1 specifies maximum number of Pods that can be created over the desired number of Pods `1` in this case. The `maxUnavailable` specifies the maximum number of Pods that can be unavailable during the update process `0` in this case.
 
-### 7. Kubectl commands
+## 8. Kubectl commands
 ```bash
 # Get pods with a specific label 'app=consumer' 
 kubectl get pods -l app=consumer -n bomc
@@ -332,12 +342,12 @@ kubectl get pod publisher-597764857f-vfpn8 -n bomc-publish -o json | jq '.status
 ```
 
 
-### 8. Microservice intercommunication inside same namespace via k8s services
+## 9. Microservice intercommunication inside same namespace via k8s services
 The 'publish'-application invokes the 'consumer'-application via REST-request.
 
  publish - springboot/webclient---------->| REST-Call |---> consumer - springboot/rest-endpoint
    
-##### a. Get environment variables inside consumer the pod.
+#### a. Get environment variables inside consumer the pod.
 Whenever a pod is created, k8s injects some env variables into the pods env. These variables can be used by containers to interact with other containers. So when a service is created, the address of the service will be injected as an env variable to all the pods that run within the *same namespace*.
 
 The k8s conventions are:
@@ -372,10 +382,10 @@ CONSUMER_SERVICE_PORT_8081_TCP_PROTO=tcp
 CONSUMER_SERVICE_PORT_8081_TCP_ADDR=10.102.64.176
 ```
 
-##### b. Get environment variables from consumer-service
+#### b. Get environment variables from consumer-service
 CONSUMER_SERVICE_SERVICE_HOST=10.102.64.176, CONSUMER_SERVICE_SERVICE_PORT=8081
 
-##### c. Extend application property in publish application
+#### c. Extend application property in publish application
 
 ```java
 
@@ -388,10 +398,10 @@ bomc.web-client.base-url=http://${CONSUMER_SERVICE_SERVICE_HOST}:${CONSUMER_SERV
 
 ```
 
-### 9. Microservice intercommunication accross namespaces
+## 10. Microservice intercommunication accross namespaces
 K8s doesn't inject environment variables from other namespaces. Using service names like 'consumer-service' are only valid within the same namespace.
 
-#### 9.1 Using fully-qualified DNS names
+### 10.1 Using fully-qualified DNS names
 Kubernetes has cluster-aware DNS service like CoreDNS running, so it is possible using fully qualified DNS names starting from cluster.local. Assume the 'consumer'-Application is running in namespace 'bomc-consumer' and has a service 'consumer-service' defined. To address using an URL shown below:
 
 ```
@@ -401,8 +411,8 @@ Kubernetes has cluster-aware DNS service like CoreDNS running, so it is possible
 bomc.web-client.base-url=http://consumer-service.bomc-consumer.svc.cluster.local:8081
 ```
 
-### 10. Healthcheck
-#### 10.1 Adding liveness probe
+## 11. Healthcheck
+### 11.1 Adding liveness probe
 ```yaml
           livenessProbe:
             httpGet:
@@ -415,7 +425,7 @@ bomc.web-client.base-url=http://consumer-service.bomc-consumer.svc.cluster.local
 
 This will check to see an HTTP 200 response from the endpoint `/actuator/health` at the deployment port every 30 seconds (`periodSeconds`) after an initial delay (`initialDelaySeconds`) of 30 seconds for a maximum of 3 times (`failureThreshold`) after which it is going to restart the container for which this liveness probe is added.
 
-### 10.2 Adding readiness probe
+### 11.2 Adding readiness probe
 ```yaml
           readinessProbe:
             httpGet:
@@ -428,17 +438,17 @@ This will check to see an HTTP 200 response from the endpoint `/actuator/health`
 
 This will check to see an HTTP 200 response from the endpoint `/actuator/health` at the deployment port every 30 seconds (`periodSeconds`) after an initial delay (`initialDelaySeconds`) of 15 seconds for a maximum of 3 times (`failureThreshold`) after which it is going to Pod will be marked container as `Unready` and no traffic will be sent to it for which this readiness probe is added which is the container running the application.
 
-### 11. Requests and limits
+## 12. Requests and limits
 
 
-### 12. Ingress router
+## 13. Ingress router
 Exceute the following command:
 
 ```bash
 minikube addons enable ingress
 ```
 
-#### 12.1 Create a service
+### 13.1 Create a service
 ```yaml
 apiVersion: v1
 kind: Service
@@ -470,7 +480,7 @@ spec:
 
 NOTE: the value of `type` is *NodePort*.
 
-#### 12.2 Check service address
+### 13.2 Check service address
 ```bash
 minikube service publish-service-nodeport-ingress -n bomc-publish --url
 
@@ -479,7 +489,7 @@ http://192.168.99.104:30194
 
 > Note: If Minikube is running locally, use `minikube ip` to get the external IP. The IP address displayed within the ingress list will be the internal IP.
 
-#### 12.3 Edit host file
+### 13.3 Edit host file
 on window: C:\Windows\System32\drivers\etc\hosts
 add the following line to the hosts file.
 
@@ -491,7 +501,7 @@ This sends requests from `bomc.ingress.org` to Minikube:
 
 Verify that the Ingress controller is directing traffic with a simple curl.
 
-### 13. ConfigMap
+## 14. ConfigMap
 A ConfigMap is a dictionary of configuration settings. This dictionary consists of key-value pairs of strings. Kubernetes provides these values to your containers.
 
 The given ConfigMap:
@@ -508,7 +518,7 @@ data:
     bomc.github=https://api.github.com
 ```
 
-#### 13.1 ConfigMap with Environment Variables and `envFrom`
+### 14.1 ConfigMap with Environment Variables and `envFrom`
 Expose with environment variables:
 
 ```YAML
@@ -563,7 +573,7 @@ private String consumerBaseUrl;
 private String githubBaseUrl;
 ```
 
-#### 13.2 ConfigMap with spring boot cloud fabric8
+### 14.2 ConfigMap with spring boot cloud fabric8
 Load application properties from Kubernetes ConfigMaps and Secrets. Reload application properties when a ConfigMap or Secret changes.
 
 Gradle dependencies
@@ -615,3 +625,68 @@ private String consumerBaseUrl;
 @Value("${bomc.github}")
 private String githubBaseUrl;
 ```
+
+## 15 ArgoCD
+
+### 15.1 Install ArgoCD
+see [https://argoproj.github.io/argo-cd/getting_started/](https://argoproj.github.io/argo-cd/getting_started/)
+
+```BASH
+kubectl create namespace argocd
+
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+ 
+### 15.2 Download Argo CD CLI (optional)
+Download the latest Argo CD version from [https://github.com/argoproj/argo-cd/releases/latest](https://github.com/argoproj/argo-cd/releases/latest). 
+More detailed installation instructions can be found via the CLI installation documentation.
+
+### 15.3 Access The Argo CD API Server
+#### Ingress
+Follow the [ingress documentation](https://argoproj.github.io/argo-cd/operator-manual/ingress/) on how to configure Argo CD with ingress.
+
+```YAML
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd
+  labels:
+    app: argocd
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /argocd
+        backend:
+          serviceName: argocd-server
+          servicePort: 80
+# kubectl apply -f 010-argocd-ingress.yaml -n argocd
+# Open a browser on 'http://localhost:8080/argocd'
+```
+
+#### Port Forwarding
+Kubectl port-forwarding can also be used to connect to the API server without exposing the service.
+
+```BASH
+# The port-forward command will also now be running in the foreground of the terminal.
+# Open another terminal window or tab and cd back into the working directory.
+kubectl port-forward svc/argocd-server -n argocd 9001:443
+
+# ArgoCD will be available at 
+https://localhost:8080.
+```
+
+#### Login to UI
+ArgoCD uses the unique name of its server pod as a default password, so every installation will be different.
+
+The following command will list the pods and format the output to provide just the line to need. 
+
+It will have the format argocd-server-<number>-<number>.
+
+```BASH
+kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+```
+

@@ -6,6 +6,6 @@ metadata:
   name: publisher
   namespace: bomc-rename-namespace
 data:
-  application-k8s.properties: |-
+  application-prod.properties: |-
     bomc.consumer=http://bomc-replace.me
     bomc.github=https://bomc-replace.me
