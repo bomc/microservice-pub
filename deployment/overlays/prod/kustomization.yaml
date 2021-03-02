@@ -8,7 +8,7 @@ commonLabels:
 images:
 - name: localhost:5000/bomc/publish
   newName: localhost:5000/bomc/publish
-  newTag: 12345.dirty
+  newTag: d0b79b2
 patchesStrategicMerge:
 - ingress-host.yaml
 - app-config-map.yaml
