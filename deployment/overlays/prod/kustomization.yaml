@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: bomc-publish-prod
+resources:
+  - ./000-namespace.yaml
 bases:
 - ./../../base/
-resources:
-  - 000-namespace.yaml
 commonLabels:
   environment: prod
 images:
@@ -14,19 +14,19 @@ images:
 patchesStrategicMerge:
 - app-config-map.yaml
 - wait-for-consumer-pod.yaml
-    # Get this configuration parameter from 030-dc.yaml
 patchesJson6902:
+# Get this configuration parameter from 030-dc.yaml
 - path: deployment-config-patch.json
   target:
     group: apps
     kind: Deployment
     name: publisher
     version: v1
-- path: namespace-patch.json
-  target:
-    kind: Namespace
-    name: bomc-rename-namespace
-    version: v1
+#- path: namespace-patch.json
+#  target:
+#    kind: Namespace
+#    name: default
+#    version: v1
 - path: ingress-host-patch.json
   target:
     kind: Ingress

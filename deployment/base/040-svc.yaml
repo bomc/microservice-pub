@@ -4,7 +4,7 @@ metadata:
   labels:
     app: publish
   name: publish-service
-  namespace: bomc-rename-namespace
+  namespace: default
 spec:
   selector:
     app: publish

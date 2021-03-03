@@ -4,6 +4,7 @@ metadata:
   labels:
     app: publish
   name: publisher
+  namespace: default
 spec:
   replicas: 1
   selector:

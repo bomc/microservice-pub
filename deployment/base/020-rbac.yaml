@@ -5,6 +5,7 @@ metadata:
   labels:
     app: publish
   name: pod-reader-role
+  namespace: default
 rules:
   - apiGroups: [""] # "" indicates the core API group
     resources: ["pods","configmaps"]
@@ -17,6 +18,7 @@ metadata:
   labels:
     app: publish
   name: publisher-role-binding
+  namespace: default
 subjects:
   - kind: ServiceAccount
     name: publisher-account
@@ -32,4 +34,5 @@ metadata:
   labels:
     app: publish
   name: publisher-account
+  namespace: default
 
