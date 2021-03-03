@@ -4,7 +4,6 @@ metadata:
   labels:
     app: publish
   name: publisher
-  namespace: bomc-rename-namespace
 spec:
   replicas: 1
   selector:

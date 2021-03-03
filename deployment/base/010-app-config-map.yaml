@@ -4,7 +4,6 @@ metadata:
   labels:
     app: publish
   name: publisher
-  namespace: bomc-rename-namespace
 data:
   application-prod.properties: |-
     bomc.consumer=http://bomc-replace.me

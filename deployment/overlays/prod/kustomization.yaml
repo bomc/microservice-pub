@@ -3,6 +3,8 @@ kind: Kustomization
 namespace: bomc-publish-prod
 bases:
 - ./../../base/
+resources:
+  - 000-namespace.yaml
 commonLabels:
   environment: prod
 images:
@@ -20,7 +22,6 @@ patchesJson6902:
     kind: Deployment
     name: publisher
     version: v1
-    namespace: bomc-rename-namespace
 - path: namespace-patch.json
   target:
     kind: Namespace

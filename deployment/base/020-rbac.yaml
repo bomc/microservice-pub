@@ -4,7 +4,6 @@ kind: Role
 metadata:
   labels:
     app: publish
-  namespace: bomc-rename-namespace
   name: pod-reader-role
 rules:
   - apiGroups: [""] # "" indicates the core API group
@@ -18,11 +17,9 @@ metadata:
   labels:
     app: publish
   name: publisher-role-binding
-  namespace: bomc-rename-namespace
 subjects:
   - kind: ServiceAccount
     name: publisher-account
-    namespace: bomc-rename-namespace
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -35,5 +32,4 @@ metadata:
   labels:
     app: publish
   name: publisher-account
-  namespace: bomc-rename-namespace
 
