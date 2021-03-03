@@ -676,7 +676,7 @@ Kubectl port-forwarding can also be used to connect to the API server without ex
 kubectl port-forward svc/argocd-server -n argocd 9001:443
 
 # ArgoCD will be available at 
-https://localhost:8080.
+https://localhost:9001
 ```
 
 #### Login to UI

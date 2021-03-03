@@ -8,9 +8,8 @@ commonLabels:
 images:
 - name: localhost:5000/bomc/publish
   newName: localhost:5000/bomc/publish
-  newTag: d0b79b2
+  newTag: 6d8cd1c
 patchesStrategicMerge:
-- ingress-host.yaml
 - app-config-map.yaml
 - wait-for-consumer-pod.yaml
     # Get this configuration parameter from 030-dc.yaml
@@ -26,3 +25,9 @@ patchesJson6902:
     kind: Namespace
     name: bomc-rename-namespace
     version: v1
+- path: ingress-host-patch.json
+  target:
+    kind: Ingress
+    name: publish-ingress
+    group: networking.k8s.io
+    version: v1beta1
