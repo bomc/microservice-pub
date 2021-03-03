@@ -20,6 +20,7 @@ patchesJson6902:
     kind: Deployment
     name: publisher
     version: v1
+    namespace: bomc-rename-namespace
 - path: namespace-patch.json
   target:
     kind: Namespace

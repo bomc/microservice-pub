@@ -134,7 +134,7 @@ jib {
         // This generates the following entrypoint line in the Dockerfile.
         // "Entrypoint": [java, -Xms360m, -Xmx360m, -Dspring.profiles.active=k8s, -cp, /app/resources:/app/classes:/app/libs/*, de.bomc.poc.publish.PublishApplication]
         
-        // The container has port 8080 exposed
+        // The container has port 8181 exposed
         ports = ['8181']
 
         //workingDirectory = '/simpleApp'
