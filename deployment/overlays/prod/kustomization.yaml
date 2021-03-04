@@ -23,7 +23,7 @@ patchesJson6902:
 - path: namespace-patch.json
   target:
     kind: Namespace
-    name: OVERRIDE_BY_OVERLAYS
+    name: default
     version: v1
 - path: ingress-host-patch.json
   target:

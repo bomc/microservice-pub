@@ -1,4 +1,4 @@
 [
-  {"op": "replace", "path": "/spec/template/spec/containers/0/env/0", "value": { "name": "ENVIRONMENT_1", "value": "prod_1" } },
-  {"op": "replace", "path": "/spec/template/spec/containers/0/env/1", "value": { "name": "ENVIRONMENT_2", "value": "prod_2" } }
+  { "op": "replace", "path": "/spec/template/spec/containers/0/env/0", "value": { "name": "ENVIRONMENT_1", "value": "prod_1" } },
+  { "op": "replace", "path": "/spec/template/spec/containers/0/env/1", "value": { "name": "ENVIRONMENT_2", "value": "prod_2" } }
 ]

@@ -4,7 +4,7 @@ metadata:
   labels:
     app: publish
   name: publisher
-  namespace: OVERRIDE_BY_OVERLAYS
+  namespace: default
 spec:
   replicas: 1
   selector:
