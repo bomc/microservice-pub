@@ -13,7 +13,7 @@ images:
   newTag: 6d8cd1c
 patchesStrategicMerge:
 - app-config-map.yaml
-- wait-for-consumer-pod.yaml
+- init-container-wait-for-consumer-deploy.yaml
 patchesJson6902:
 # Get this configuration parameter from 030-dc.yaml
 - path: deployment-config-patch.json
