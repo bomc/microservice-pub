@@ -679,7 +679,7 @@ kubectl port-forward svc/argocd-server -n argocd 9001:443
 https://localhost:9001
 ```
 
-#### Login to UI
+#### Login to UI -> get password
 ArgoCD uses the unique name of its server pod as a default password, so every installation will be different.
 
 The following command will list the pods and format the output to provide just the line to need. 
