@@ -4,7 +4,7 @@ metadata:
   labels:
     app: publish
   name: publisher
-  namespace: default
+  namespace: OVERRIDE_BY_OVERLAYS
 spec:
   replicas: 1
   selector:
@@ -26,7 +26,7 @@ spec:
       serviceAccountName: publisher-account
       containers:
       - name: publish
-        image: localhost:5000/bomc/publish:v.1.0.0-68-ga508b98
+        image: localhost:5000/bomc/publish:OVERRIDE_BY_OVERLAYS
         imagePullPolicy: IfNotPresent
         env:
         - name: ENVIRONMENT_1

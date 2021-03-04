@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: publish-service-nodeport-ingress
-  namespace: default
+  namespace: OVERRIDE_BY_OVERLAYS
   labels:
     app: publish
 spec:

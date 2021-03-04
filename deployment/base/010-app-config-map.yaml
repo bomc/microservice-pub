@@ -4,8 +4,8 @@ metadata:
   labels:
     app: publish
   name: publisher
-  namespace: default
+  namespace: OVERRIDE_BY_OVERLAYS
 data:
   application-prod.properties: |-
-    bomc.consumer=http://bomc-replace.me
-    bomc.github=https://bomc-replace.me
+    bomc.consumer=http://OVERRIDE_BY_OVERLAYS
+    bomc.github=https://OVERRIDE_BY_OVERLAYS

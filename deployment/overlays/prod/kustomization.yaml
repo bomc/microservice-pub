@@ -1,8 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: bomc-publish-prod
-#resources:
-#  - ./000-namespace.yaml
 bases:
 - ./../../base/
 commonLabels:
@@ -25,7 +23,7 @@ patchesJson6902:
 - path: namespace-patch.json
   target:
     kind: Namespace
-    name: default
+    name: OVERRIDE_BY_OVERLAYS
     version: v1
 - path: ingress-host-patch.json
   target:

@@ -4,13 +4,13 @@ metadata:
   labels:
     app: publish
   name: publish-ingress
-  namespace: default
+  namespace: OVERRIDE_BY_OVERLAYS
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - host: bomc.replace.me
+    - host: OVERRIDE_BY_OVERLAYS
       http:
         paths:
           - path: /bomc(/|$)(.*)

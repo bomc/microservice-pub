@@ -5,7 +5,7 @@ metadata:
   labels:
     app: publish
   name: pod-reader-role
-  namespace: default
+  namespace: OVERRIDE_BY_OVERLAYS
 rules:
   - apiGroups: [""] # "" indicates the core API group
     resources: ["pods","configmaps"]
@@ -18,7 +18,7 @@ metadata:
   labels:
     app: publish
   name: publisher-role-binding
-  namespace: default
+  namespace: OVERRIDE_BY_OVERLAYS
 subjects:
   - kind: ServiceAccount
     name: publisher-account
@@ -34,5 +34,5 @@ metadata:
   labels:
     app: publish
   name: publisher-account
-  namespace: default
+  namespace: OVERRIDE_BY_OVERLAYS
 
