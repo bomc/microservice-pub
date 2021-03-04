@@ -10,7 +10,7 @@ commonLabels:
 images:
 - name: localhost:5000/bomc/publish
   newName: localhost:5000/bomc/publish
-  newTag: 6d8cd1c
+  newTag: 69b071f
 patchesStrategicMerge:
 - app-config-map.yaml
 - init-container-wait-for-consumer-deploy.yaml
