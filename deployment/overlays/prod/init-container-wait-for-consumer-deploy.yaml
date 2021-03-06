@@ -10,4 +10,4 @@ spec:
       - name: wait-for-consumer-pod
         image: curlimages/curl:7.75.0
         command: ["/bin/sh", "-c"]
-        args: ["while [ $(curl --connect-timeout 5 --no-keepalive -s -v -w '%{http_code}\n' -H 'Connection: close' http://consumer-service.bomc-consumer.svc.cluster.local:8081/actuator/health/liveness -o /dev/null) -ne 200 ]; do sleep 5; echo `date +'%d.%m.%Y %H:%M:%S'` - Waiting for consumer pod... ; done"]
+        args: ["while [ $(curl --connect-timeout 5 --no-keepalive -s -v -w '%{http_code}\n' -H 'Connection: close' http://consumer-service.bomc-consumer-prod.svc.cluster.local:8081/actuator/health/liveness -o /dev/null) -ne 200 ]; do sleep 5; echo `date +'%d.%m.%Y %H:%M:%S'` - Waiting for consumer pod... ; done"]
