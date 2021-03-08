@@ -4,6 +4,6 @@ metadata:
   name: publisher
   namespace: default
 data:
-  application-test.properties: |-
-    bomc.consumer=http://consumer-service.bomc-consumer-test.svc.cluster.local:8081
+  application-prod.properties: |-
+    bomc.consumer=http://consumer-service.bomc-consumer-prod.svc.cluster.local:8081
     bomc.github=https://api.github.com
