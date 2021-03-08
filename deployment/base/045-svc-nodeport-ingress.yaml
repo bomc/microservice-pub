@@ -10,7 +10,7 @@ spec:
     app: publish
   ports:
   - protocol: TCP
-    name: 8181-tcp
-    port: 8181
-    targetPort: 8181
+    name: OVERRIDE_BY_OVERLAYS
+    port: OVERRIDE_BY_OVERLAYS
+    targetPort: OVERRIDE_BY_OVERLAYS
   type: NodePort

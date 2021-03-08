@@ -1,3 +1,4 @@
 [
-  { "op": "replace", "path": "/spec/rules/0/host", "value": "bomc.ingress.org" }
+  { "op": "replace", "path": "/spec/rules/0/host", "value": "bomc.ingress.org" },
+  { "op": "replace", "path": "/spec/rules/0/http/paths/0/backend/servicePort", "value": "8181" }
 ]

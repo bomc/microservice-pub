@@ -16,7 +16,7 @@ spec:
           - path: /bomc(/|$)(.*)
             backend:
               serviceName: publish-service-nodeport-ingress
-              servicePort: 8181
+              servicePort: OVERRIDE_BY_OVERLAYS
 #
 # This rewrite any characters captured by '(.*)' will be assigned to the placeholder '$2',
 # which is then used as a parameter in the 'rewrite-target' annotation.

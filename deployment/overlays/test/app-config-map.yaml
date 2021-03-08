@@ -2,7 +2,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: publisher
+  namespace: default
 data:
   application-test.properties: |-
-    bomc.consumer=http://consumer-service.bomc-consumer.svc.cluster.local:8081
+    bomc.consumer=http://consumer-service.bomc-consumer-test.svc.cluster.local:8081
     bomc.github=https://api.github.com

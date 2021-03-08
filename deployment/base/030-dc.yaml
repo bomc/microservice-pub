@@ -56,19 +56,19 @@ spec:
             cpu: 50m
             memory: 360Mi
         ports:
-        - containerPort: 8181
+        - containerPort: OVERRIDE_BY_OVERLAYS
           protocol: TCP
         readinessProbe:
           httpGet:
             path: /actuator/health/readiness
-            port: 8181
+            port: OVERRIDE_BY_OVERLAYS
           initialDelaySeconds: 25
           periodSeconds: 30
           failureThreshold: 3
         livenessProbe:
           httpGet:
             path: /actuator/health/liveness
-            port: 8181
+            port: OVERRIDE_BY_OVERLAYS
           initialDelaySeconds: 30
           periodSeconds: 30
           failureThreshold: 3
@@ -79,4 +79,4 @@ spec:
       - name: wait-for-consumer-pod
         image: curlimages/curl:7.75.0
         command: ["/bin/sh", "-c"]
-        args: ["while [ $(curl --connect-timeout 5 --no-keepalive -s -v -w '%{http_code}\n' -H 'Connection: close' http://consumer-service.bomc-consumer-prod.svc.cluster.local:8081/actuator/health/liveness -o /dev/null) -ne 200 ]; do sleep 5; echo `date +'%d.%m.%Y %H:%M:%S'` - Waiting for consumer pod... ; done"]
+        args: ["while [ $(curl --connect-timeout 5 --no-keepalive -s -v -w '%{http_code}\n' -H 'Connection: close' http://OVERRIDE_BY_OVERLAYS -o /dev/null) -ne 200 ]; do sleep 5; echo `date +'%d.%m.%Y %H:%M:%S'` - Waiting for consumer pod... ; done"]

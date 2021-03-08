@@ -13,17 +13,21 @@ patchesStrategicMerge:
 - app-config-map.yaml
 - init-container-wait-for-consumer-deploy.yaml
 patchesJson6902:
-# Get this configuration parameter from 030-dc.yaml
+- path: namespace-patch.json
+  target:
+    kind: Namespace
+    name: default
+    version: v1
 - path: deployment-config-patch.json
   target:
     group: apps
     kind: Deployment
     name: publisher
     version: v1
-- path: namespace-patch.json
+- path: service-port-patch.json
   target:
-    kind: Namespace
-    name: default
+    kind: Service
+    name: publish-service-nodeport-ingress
     version: v1
 - path: ingress-host-patch.json
   target:
