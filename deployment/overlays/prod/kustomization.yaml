@@ -8,7 +8,7 @@ commonLabels:
 images:
 - name: localhost:5000/bomc/publish
   newName: localhost:5000/bomc/publish
-  newTag: "0347428"
+  newTag: v0.0.1-1-g15a6bbc
 patchesStrategicMerge:
 - app-config-map.yaml
 - init-container-wait-for-consumer-deploy.yaml
