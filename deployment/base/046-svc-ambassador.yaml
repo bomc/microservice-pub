@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: publish-service-ambassador
+  namespace: default
+  labels:
+    app: publish
+  annotations:
+    getambassador.io/config: |
+      ---
+        apiVersion: ambassador/v0
+        kind:  Mapping
+        name:  ambassador-publish-prod
+        prefix: /bomc-a/
+        service: publish-service-ambassador
+spec:
+  selector:
+    app: publish
+  ports:
+  - protocol: TCP
+    name: OVERRIDE_BY_OVERLAYS
+    port: OVERRIDE_BY_OVERLAYS
+    targetPort: OVERRIDE_BY_OVERLAYS
+  type: NodePort

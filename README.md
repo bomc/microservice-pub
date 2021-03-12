@@ -30,9 +30,11 @@ local:
 * http://localhost:8081/webjars/swagger-ui/index.html?configUrl=/api-docs/swagger-config#/
 
 minikube:
+
 ```bash
 minikube service list
 ```
+
 e.g. output:
 
 | --- | --- | --- | --- |
@@ -691,5 +693,13 @@ It will have the format argocd-server-<number>-<number>.
 
 ```BASH
 kubectl get pods -n argocd -l app.kubernetes.io/name=argocd-server -o name | cut -d'/' -f 2
+```
+
+## 16 Ambassador
+
+### 16.1 Install
+
+```bash
+kubectl apply -f https://www.getambassador.io/yaml/aes-crds.yaml && kubectl wait --for condition=established --timeout=90s crd -lproduct=aes && kubectl apply -f https://www.getambassador.io/yaml/aes.yaml && kubectl -n ambassador wait --for condition=available --timeout=90s deploy -lproduct=aes
 ```
 
