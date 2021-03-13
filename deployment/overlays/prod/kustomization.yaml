@@ -27,11 +27,11 @@ patchesJson6902:
 - path: service-port-patch.json
   target:
     kind: Service
-    name: publish-service-nodeport-ingress
+    name: publish-service-cluster-ip
     version: v1
-- path: ingress-host-patch.json
-  target:
-    kind: Ingress
-    name: publish-ingress
-    group: networking.k8s.io
-    version: v1beta1
+#- path: ingress-host-patch.json
+#  target:
+#    kind: Ingress
+#    name: publish-ingress
+#    group: networking.k8s.io
+#    version: v1beta1

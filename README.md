@@ -669,10 +669,10 @@ kubectl create namespace argocd
 
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
-# Download install.yaml locally and install it from local directory.
+# ... or download install.yaml locally and install it from local directory.
 kubectl apply -n argocd -f install-argocd.yaml
 ```
- 
+
 ### 15.2 Download Argo CD CLI (optional)
 Download the latest Argo CD version from [https://github.com/argoproj/argo-cd/releases/latest](https://github.com/argoproj/argo-cd/releases/latest). 
 More detailed installation instructions can be found via the CLI installation documentation.
