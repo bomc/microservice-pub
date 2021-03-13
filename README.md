@@ -468,7 +468,30 @@ spec:
     port: 8181
     targetPort: 8181
   type: NodePort
-  
+```
+
+### 13.2 Create Ingress Router
+
+```YAML
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  labels:
+    app: publish
+  name: publish-ingress
+  namespace: default
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: OVERRIDE_BY_OVERLAYS
+      http:
+        paths:
+          - path: /bomc(/|$)(.*)
+            backend:
+              serviceName: publish-service-nodeport-ingress
+              servicePort: OVERRIDE_BY_OVERLAYS
 #
 # This rewrite any characters captured by '(.*)' will be assigned to the placeholder '$2',
 # which is then used as a parameter in the 'rewrite-target' annotation.
@@ -477,14 +500,13 @@ spec:
 # - 'bomc.ingress.org/bomc' rewrites to 'bomc.ingress.org/'
 # - 'bomc.ingress.org/bomc/' rewrites to 'bomc.ingress.org/'
 # - 'bomc.ingress.org/bomc/api/metadata' rewrites to 'bomc.ingress.org/api/metdata'
-#
 ```
 
 NOTE: the value of `type` is *NodePort*.
 
 ### 13.2 Check service address
 ```bash
-minikube service publish-service-nodeport-ingress -n bomc-publish --url
+minikube service publish-service-nodeport-ingress -n bomc-publish-prod --url
 
 http://192.168.99.104:30194
 ```
@@ -499,9 +521,18 @@ add the following line to the hosts file.
 192.168.99.104 bomc.ingress.org
 ```
 
+### 13.4 Check if ingress is configured
+
+$ kubectl get ingress -n bomc-publish-prod
+NAME              HOSTS              ADDRESS          PORTS   AGE
+publish-ingress   bomc.ingress.org   192.168.99.107   80      50m
+
 This sends requests from `bomc.ingress.org` to Minikube:
 
-Verify that the Ingress controller is directing traffic with a simple curl.
+```bash
+# Verify that the Ingress controller is directing traffic with a simple curl.
+curl -v -X GET "http://bomc.ingress.org/bomc/api/metadata/" -H  "accept: application/json" -H  "X-B3-TraceId: 70f198ee56343ba864fe8b2a57d3eff7" -H  "X-B3-ParentSpanId: 15e3ac9a4f6e3b90"
+```
 
 ## 14. ConfigMap
 A ConfigMap is a dictionary of configuration settings. This dictionary consists of key-value pairs of strings. Kubernetes provides these values to your containers.
