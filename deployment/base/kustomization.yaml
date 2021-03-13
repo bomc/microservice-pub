@@ -7,9 +7,9 @@ resources:
   - ./020-rbac.yaml
   - ./030-dc.yaml
   #- /040-svc.yaml
-  #- ./045-svc-nodeport-ingress.yaml
-  - ./046-svc-ambassador.yaml
-  #- ./050-ingress.yaml
+  - ./045-svc-nodeport-ingress.yaml
+  #- ./046-svc-ambassador.yaml
+  - ./050-ingress.yaml
 
 commonLabels:
   app.kubernetes.io/name: bomc-publish-app

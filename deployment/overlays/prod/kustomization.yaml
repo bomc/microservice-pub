@@ -8,7 +8,7 @@ commonLabels:
 images:
 - name: localhost:5000/bomc/publish
   newName: localhost:5000/bomc/publish
-  newTag: v0.0.1-1-g15a6bbc
+  newTag: v0.0.1-4-g173f733.dirty
 patchesStrategicMerge:
 - app-config-map.yaml
 - init-container-wait-for-consumer-deploy.yaml
@@ -27,11 +27,11 @@ patchesJson6902:
 - path: service-port-patch.json
   target:
     kind: Service
-    name: publish-service-ambassador
+    name: publish-service-nodeport-ingress
     version: v1
-#- path: ingress-host-patch.json
-#  target:
-#    kind: Ingress
-#    name: publish-ingress
-#    group: networking.k8s.io
-#    version: v1beta1
+- path: ingress-host-patch.json
+  target:
+    kind: Ingress
+    name: publish-ingress
+    group: networking.k8s.io
+    version: v1beta1
