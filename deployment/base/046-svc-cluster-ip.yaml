@@ -13,4 +13,4 @@ spec:
     name: OVERRIDE_BY_OVERLAYS
     port: OVERRIDE_BY_OVERLAYS
     targetPort: OVERRIDE_BY_OVERLAYS
-  type: ClusterIP
+  type: LoadBalancer
